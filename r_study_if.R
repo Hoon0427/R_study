@@ -35,7 +35,7 @@ while(i<=9){
   print(i)
 }
 
-i<-1
+i<-2
 repeat{
   print(i)
   if ( i>=10){
