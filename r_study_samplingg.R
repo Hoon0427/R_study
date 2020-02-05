@@ -17,3 +17,9 @@ strata(c("Species"), size=c(3, 1, 1), method="srswr", data=iris)
 
 iris$Species2 <- rep(1:2, 75) # 1, 2, 1, 2, ..., 1, 2
 strata(c("Species", "Species2"), size=c(1, 1, 1, 1, 1, 1), method="srswr", data=iris)
+
+install.packages("doBy")
+library(doBy)
+
+(x<-data.frame(x=1:10))
+sampleBy(~1,frac=.3, data=x, systematic=TRUE)
