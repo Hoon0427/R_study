@@ -1,9 +1,4 @@
 
-
-
-
-
-
 frime_func <- function(x) {
   prime_set <- c()
   for(j in 2:x) {
@@ -45,7 +40,7 @@ for(j in 2:1000) {
 
 prime_set
 
-
+count<-0
 for(i in 1:7) {
   if(7 %% i == 0 ) {
     count <- count + 1
@@ -54,3 +49,4 @@ for(i in 1:7) {
 
 
 count
+
