@@ -7,7 +7,7 @@
 library(rJava)
 
 # tidytext packages
-# library(tidytext)
+# library(tidytext) 
 
 
 # 의존성 패키지 설치
