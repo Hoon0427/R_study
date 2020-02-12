@@ -1,4 +1,4 @@
-d<-subset(iris,Species=="virginica"|Species=="versicolor")
+d <- subset(iris, Species == "virginica" | Species == "versicolor")
 str(d)
 
 d$Species <- factor(d$Species)
@@ -8,10 +8,9 @@ str(d)
 
 fitted(m)[c(1:5, 51:55)]
 
-
-f<-fitted(m)
+f <- fitted(m)
 as.numeric(d$Species)
-ifelse(f > .5, 1, 0) == as.numeric(d$Species) - 1
+ifelse(f> .5, 1, 0)==as.numeric(d$Species) -1
 
 is_correct <- (ifelse(f > .5, 1, 0) == as.numeric(d$Species) - 1)
 sum(is_correct)
