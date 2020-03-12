@@ -1,0 +1,60 @@
+---
+title: "flexdahboard"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: fill
+    theme: spacelab
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+```
+
+
+iris
+=======================================================================
+
+Rows {data-height=650}
+-----------------------------------------------------------------------
+
+### Chart A
+
+```{r}
+plot(iris$Sepal.Length)
+```
+
+Rows {data-height=350}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+plot(iris$Sepal.Width)
+```
+
+### Chart C
+
+```{r}
+
+```
+
+
+car
+=======================================================================
+
+-----------------------------------------------------------------------
+
+### chart AA
+```{r}
+plot(cars$speed)
+```
+
+Row {data-height=350}
+-----------------------------------------------------------------------
+
+### chart BB
+```{r}
+plot(cars$dist)
+```
+
