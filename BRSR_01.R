@@ -35,3 +35,34 @@ names(pca)
 pca$rotation = -pca$rotation
 pca$x = -pca$x
 biplot(pca, scale = 0)
+
+#K-평균 클러스터링
+library(cluster)
+data(iris)
+iris$Species = as.numeric(iris$Species)
+kmeans <- kmeans(x = iris, center = 5)
+clusplot(iris, kmeans$cluster, color = TRUE, shade = TRUE, labels = 13, lines = 0)
+
+library(ggplot2)
+data("iris")
+iris$Species = as.numeric(iris$Species)
+cost_df <- data.frame()
+for (i in 1:!00){
+  kmeans <- kmeans(x = iris, centers = i, iter.max = 50)
+  cost_df <- rbind(cost_df, cbind(i, kmeans$tot.withinss))
+}
+names(cost_df) <- c("cluster", "cost")
+
+str(cost_df)
+
+#Elbow 기법으로 유휴한 클러스터의 수를 식별한다.
+#비용 그래프
+ggplot(data = cost_df, aes(x = cluster, y = cost, group = 1 )) +
+  theme_bw(base_family = "Garamond") +
+  geom_line(colour = "darkgreen") +
+  theme(text = element_text(size = 20)) +
+  ggtitle("Reduction In Cost For Values of `k`\n") +
+  xlab("\nClusters") +
+  ylab("Within-Cluster Sum of Squares \n")
+
+
