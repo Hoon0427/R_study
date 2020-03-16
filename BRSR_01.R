@@ -65,4 +65,64 @@ ggplot(data = cost_df, aes(x = cluster, y = cost, group = 1 )) +
   xlab("\nClusters") +
   ylab("Within-Cluster Sum of Squares \n")
 
+#SVM
+library(e1071)
+data("iris")
+sample = iris[sample(nrow(iris)),]
+train = sample[1:105,]
+test = sample[106:150,]
+tune = tune(svm, Species~., data = train, kernel = "radial", scale = FALSE,
+            ranges = list(cost = c(0.001, 0.01, 0.1, 1, 5, 10, 100)))
 
+tune$best.model
+
+summary(tune)
+
+model = svm(Species~., data=train, kernel = "radial", cost = 10, scale = FALSE)
+
+pred = predict(model, test)
+
+#install.packages("tree")
+library(tree)
+sample = iris[sample(nrow(iris)),]
+train = sample[1:105,]
+test = sample[106:150,]
+model = tree(Species~.,train)
+summary(model)
+
+#의사결정 나무 표 그리기
+plot(model)
+text(model)
+pred = predict(model, test[,-5], type="class")
+pred
+
+#randomForest
+library(randomForest)
+data("iris")
+sample = iris[sample(nrow(iris)),]
+train = sample[1:105,]
+test = sample[106:150,]
+model = randomForest(Species~.,data=train, mtry = 2, importance = TRUE, proximity = TRUE)
+model
+
+pred = predict(model, newdata = test[,-5])
+pred
+
+#R에서의 부스팅
+#install.packages("gbm")
+library(gbm)
+data(iris)
+sample = iris[sample(nrow(iris)),]
+train = sample[1:105,]
+test = sample[106:150,]
+model = gbm(Species~.,data = train, distribution = "multinomial",
+            n.trees = 5000, interaction.depth = 4)
+summary(model)
+
+#위의 요약 내용은 모델의 변수들이 가지는 상대적 중요성을 나타낸다.
+pred = predict(model, newdata = test[,-5], n.trees = 5000)
+pred[1:5,,]
+
+#apply(..,1, which.max) 함수를 실행해 pred 매트릭스로부터 가장 높은 확률을 가진 값을 응답으로 선택한다
+p.pred <- apply(pred, 1, which.max)
+p.pred
