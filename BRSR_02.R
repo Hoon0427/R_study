@@ -56,3 +56,25 @@ slotNames(MovieLense)
 
 class(MovieLense@data)
 dim(MovieLense)
+
+vector_ratings <- as.vector(MovieLense@data)
+unique(vector_ratings)
+
+table_ratings <- table(vector_ratings)
+table_ratings
+
+vector_ratings <- vector_ratings[vector_ratings != 0]
+
+vector_ratings <- factor(vector_ratings)
+qplot(vector_ratings) + ggtitle("Distribution of the ratings")
+
+views_per_movie <- colCounts(MovieLense)
+
+table_views <- data.frame(movie = names(views_per_movie),
+                         views = views_per_movie)
+table_views <- table_views[order(table_views$views, decreasing = TRUE), ]
+
+ggplot(table_views[1:6, ], aes(x = movie, y = views)) +
+  geom_bar(stat="identity") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  ggtitle("Number of views of the top movies")
