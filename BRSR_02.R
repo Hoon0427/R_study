@@ -1,6 +1,6 @@
-if(!"recommenderlab" %in% rownames(install.packages())){
-  install.packages("recommenderlab")
-}
+# if(!"recommenderlab" %in% rownames(install.packages())){
+#   install.packages("recommenderlab")
+# }
 
 library(recommenderlab)
 help(package = "recommenderlab")
@@ -78,3 +78,27 @@ ggplot(table_views[1:6, ], aes(x = movie, y = views)) +
   geom_bar(stat="identity") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   ggtitle("Number of views of the top movies")
+
+average_ratings <- colMeans(MovieLense)
+
+qplot(average_ratings) + stat_bin(binwidth = 0.1) +
+  ggtitle("Distribution of the average movie rating")
+
+average_ratings_relevant <- average_ratings[views_per_movie > 100]
+
+qplot(average_ratings_relevant) +
+  stat_bin(binwidth = 0.1) +
+  ggtitle(paste("Distribution of the relevant average ratings"))
+
+image(MovieLense, main = "Heatmap of the rating matrix")
+
+image(MovieLense[1:10, 1:15], main = "Heatmap of the first rows and columns")
+
+min_n_movies <- quantile(rowCounts(MovieLense), 0.99)
+min_n_users <- quantile(colCounts(MovieLense), 0.99)
+min_n_movies
+min_n_users
+
+image(MovieLense[rowCounts(MovieLense) > min_n_movies,
+                 colCounts(MovieLense) > min_n_users],
+      main = "Heatmap of the top users and movies")
