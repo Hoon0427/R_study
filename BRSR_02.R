@@ -102,3 +102,45 @@ min_n_users
 image(MovieLense[rowCounts(MovieLense) > min_n_movies,
                  colCounts(MovieLense) > min_n_users],
       main = "Heatmap of the top users and movies")
+
+ratings_movies <- MovieLense[rowCounts(MovieLense)>50,
+                             colCounts(MovieLense)>100]
+ratings_movies
+
+#상위 조건 반영
+min_movies <- quantile(rowCounts(ratings_movies), 0.98)
+min_users <- quantile(colCounts(ratings_movies), 0.98)
+
+image(ratings_movies[rowCounts(ratings_movies) > min_movies,
+                     colCounts(ratings_movies) > min_users],
+      main = "Heatmap of the top users and movies")
+
+average_ratings_per_user <- rowMeans(ratings_movies)
+
+qplot(average_ratings_per_user) +
+  stat_bin(binwidth = 0.1) +
+  ggtitle("Distribution of the average rating per user")
+
+ratings_movies_norm <- normalize(ratings_movies)
+
+sum(rowMeans(ratings_movies_norm) > 0.00001)
+
+#정규화된 매트릭스를 시각화
+image(ratings_movies_norm[rowCounts(ratings_movies_norm) > min_movies,
+                          colCounts(ratings_movies_norm) > min_users],
+      main = "Heatmap of the top users and movies")
+
+ratings_movies_watched <- binarize(ratings_movies, minRating = 1)
+
+min_movies_binary <- quantile(rowCounts(ratings_movies), 0.95)
+min_users_binary <- quantile(colCounts(ratings_movies), 0.95)
+
+image(ratings_movies_watched[rowCounts(ratings_movies) > min_movies_binary,
+                             colCounts(ratings_movies) > min_users_binary],
+      main = "Heatmap of the top users and movies")
+
+ratings_movies_good <- binarize(ratings_movies, minRating = 3)
+
+image(ratings_movies_good[rowCounts(ratings_movies) > min_movies_binary,
+                          colCounts(ratings_movies) > min_users_binary],
+      main = "Heatmpa of the top users and movies")
