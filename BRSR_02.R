@@ -144,3 +144,79 @@ ratings_movies_good <- binarize(ratings_movies, minRating = 3)
 image(ratings_movies_good[rowCounts(ratings_movies) > min_movies_binary,
                           colCounts(ratings_movies) > min_users_binary],
       main = "Heatmpa of the top users and movies")
+
+which_train <- sample(x = c(TRUE, FALSE), size = nrow(ratings_movies),
+                      replace = TRUE, prob = c(0.8, 0.2))
+head(which_train)
+
+recc_data_train <- ratings_movies[which_train, ]
+recc_data_test <-  ratings_movies[!which_train, ]
+
+which_set <- sample(x = 1:5, size = nrow(ratings_movies), replace = TRUE)
+for(i_model in 1:5){
+  which_train <- which_set == i_model
+  recc_data_train <- ratings_movies[which_train, ]
+  recc_data_test <- ratings_movies[!which_train, ]
+#Recommender 구성하기
+}
+
+recommender_models <- recommenderRegistry$get_entries(dataType = "realRatingMatrix")
+recommender_models$IBCF_realRatingMatrix$parameters
+
+recc_model <- Recommender(data = recc_data_train, method = "IBCF",
+                          parameter = list(k = 30))
+recc_model
+class(recc_model)
+
+model_details <- getModel(recc_model)
+model_details$description
+
+class(model_details$sim)
+
+dim(model_details$sim)
+
+n_items_top <- 20
+
+image(model_details$sim[1:n_items_top, 1:n_items_top],
+      main = "Heatmap of the first rows and columns")
+
+model_details$k
+row_sums <- rowSums(model_details$sim > 0)
+table(row_sums)
+
+col_sums <- colSums(model_details$sim > 0)
+
+qplot(col_sums) + stat_bin(binwidth = 1) + ggtitle("Distribution of the column count")
+
+which_max <- order(col_sums, decreasing = TRUE)[1:6]
+rownames(model_details$sim)[which_max]
+
+n_recommender <- 6
+
+recc_predicted <- predict(object = recc_model, newdata = recc_data_test,
+                          n = n_recommender)
+recc_predicted
+
+class(recc_predicted)
+slotNames(recc_predicted)
+
+recc_predicted@items[[1]]
+
+recc_user_1 <- recc_predicted@items[[1]]
+movies_user_1 <- recc_predicted@itemLabels[recc_user_1]
+movies_user_1
+
+recc_matrix <- sapply(recc_predicted@items, function(x){colnames(ratings_movies)[x]})
+dim(recc_matrix)
+
+recc_matrix[, 1:4]
+
+number_of_items <- factor(table(recc_matrix))
+chart_title <- "Distribution of the number of items for IBCF"
+
+qplot(number_of_items) + ggtitle(chart_title)
+
+number_of_items_sorted <- sort(number_of_items, decreasing = TRUE)
+number_of_items_top <- head(number_of_items_sorted, n = 4)
+table_top <- data.frame(names(number_of_items_top), number_of_items_top)
+table_top
