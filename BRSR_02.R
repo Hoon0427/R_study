@@ -220,3 +220,6 @@ number_of_items_sorted <- sort(number_of_items, decreasing = TRUE)
 number_of_items_top <- head(number_of_items_sorted, n = 4)
 table_top <- data.frame(names(number_of_items_top), number_of_items_top)
 table_top
+
+recommender_models <- recommenderRegistry$get_entries(dataType = "realRatingMatrix")
+recommender_models$UBCF_realRatingMatrix$parameters
