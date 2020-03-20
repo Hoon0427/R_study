@@ -223,3 +223,32 @@ table_top
 
 recommender_models <- recommenderRegistry$get_entries(dataType = "realRatingMatrix")
 recommender_models$UBCF_realRatingMatrix$parameters
+
+recc_model <- Recommender(data = recc_data_train, method = "UBCF")
+recc_model
+
+model_details <- getModel(recc_model)
+names(model_details)
+
+model_details$data
+
+n_recommended <- 6
+recc_predicted <- predict(object = recc_model,
+                          newdata = recc_data_test,
+                          n = n_recommended)
+recc_predicted
+
+recc_matrix <- sapply(recc_predicted@items, function(x){colnames(ratings_movies)[x]})
+dim(recc_matrix)
+
+recc_matrix[, 1:4]
+
+number_of_items <- factor(table(recc_matrix))
+chart_title <- "Distribution of the number of items for UBCF"
+
+qplot(number_of_items) + ggtitle(chart_title)
+
+number_of_items_sorted <- sort(number_of_items, decreasing = TRUE)
+number_of_items_top <- head(number_of_items_sorted, n = 4)
+table_top <- data.frame(names(number_of_items_top), number_of_items_top)
+table_top
