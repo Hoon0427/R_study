@@ -252,3 +252,13 @@ number_of_items_sorted <- sort(number_of_items, decreasing = TRUE)
 number_of_items_top <- head(number_of_items_sorted, n = 4)
 table_top <- data.frame(names(number_of_items_top), number_of_items_top)
 table_top
+
+?binarize
+
+ratings_movies_watched <- binarize(ratings_movies, minRating = 1)
+
+qplot(rowSums(ratings_movies_watched)) + 
+  stat_bin(binwidth = 10) +
+  geom_vline(xintercept = mean(rowSums(ratings_movies_watched)),
+             col = "red", linetype = "dashed") +
+  ggtitle("Distribution of movies by user")
