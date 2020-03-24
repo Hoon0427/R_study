@@ -44,3 +44,56 @@ n_eval <- 1
 eval_sets <- evaluationScheme(data = ratings_movies, method = "bootstrap",
                               train = percentage_training, given = items_to_keep,
                               goodRating = rating_threshold, k = n_eval)
+
+nrow(getData(eval_sets, "train")) / nrow(ratings_movies)
+
+perc_test <- nrow(getData(eval_sets, "known")) / nrow(ratings_movies)
+perc_test
+
+length(unique(eval_sets@runsTrain[[1]]))
+
+perc_train <- length(unique(eval_sets@runsTrain[[1]])) / nrow(ratings_movies)
+perc_train + perc_test
+
+table_train <- table(eval_sets@runsTrain[[1]])
+n_repetitions <- factor(as.vector(table_train))
+qplot(n_repetitions) + ggtitle("Number of repetitions in the traing set")
+
+n_fold <- 4
+eval_sets <- evaluationScheme(data = ratings_movies, method = "cross-validation", k = n_fold,
+                              given = items_to_keep, goodRating = rating_threshold)
+
+size_sets <- sapply(eval_sets@runsTrain, length)
+size_sets
+
+n_fold <- 4
+items_to_keep <- 15
+rating_threshold <- 3
+eval_sets <- evaluationScheme(data = ratings_movies, method = "cross-validation", k = n_fold,
+                              given = items_to_keep, goodRating = rating_threshold)
+
+model_to_evaluate <- "IBCF"
+model_parameters <- NULL
+
+eval_recommender <- Recommender(data = getData(eval_sets, "train"),
+                                method = model_to_evaluate, parameter = model_parameters)
+
+items_to_recommend <- 10
+
+eval_prediction <- predict(object = eval_recommender, newdata = getData(eval_sets, "known"),
+                           n = items_to_recommend, type = "ratings")
+class(eval_prediction)
+
+qplot(rowCounts(eval_prediction)) +
+  geom_histogram(binwidth = 10) + 
+  ggtitle("Distribution of movies per user")
+
+eval_accuracy <- calcPredictionAccuracy(x = eval_prediction, data = getData(eval_sets, "unknown"), byUser = TRUE)
+head(eval_accuracy)
+
+qplot(eval_accuracy[, "RMSE"]) +
+  geom_histogram(binwidth = 0.1) +
+  ggtitle("Distribution of the RMSE by user")
+
+eval_accuracy <- calcPredictionAccuracy(x = eval_prediction, data = getData(eval_sets, "unknown"), byUser = FALSE)
+eval_accuracy
