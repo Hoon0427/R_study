@@ -285,5 +285,18 @@ recc_predicted <- predict(object = recc_model, newdata = recc_data_test,
                           n = n_recommended)
 recc_matrix <- sapply(recc_predicted@items, function(x){colnames(ratings_movies)[x]})
 
-recc_matrix[, 1:4]
+recc_matrix
 
+head(recc_matrix, 4)
+
+recc_model <- Recommender(data = recc_data_train,
+                          method = "UBCF", parameter = list(method = "Jaccard"))
+
+n_recommended <- 6
+recc_predicted <- predict(object = recc_model, newdata = recc_data_test,
+                          n = n_recommended)
+
+recc_matrix <- sapply(recc_predicted@items,
+                      function(x){colnames(ratings_movies)[x]})
+dim(recc_matrix)
+recc_matrix[ ,1:4]
