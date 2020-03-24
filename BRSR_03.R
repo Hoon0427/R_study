@@ -36,3 +36,11 @@ unique(rowCounts(getData(eval_sets, "known")))
 qplot(rowCounts(getData(eval_sets, "unknown"))) +
   geom_histogram(binwidth = 10) +
   ggtitle("unknown items by the users")
+
+percentage_training <- 0.8
+items_to_keep <- 15
+rating_threshold <- 3
+n_eval <- 1
+eval_sets <- evaluationScheme(data = ratings_movies, method = "bootstrap",
+                              train = percentage_training, given = items_to_keep,
+                              goodRating = rating_threshold, k = n_eval)
