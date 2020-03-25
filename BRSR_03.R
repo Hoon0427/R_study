@@ -97,3 +97,16 @@ qplot(eval_accuracy[, "RMSE"]) +
 
 eval_accuracy <- calcPredictionAccuracy(x = eval_prediction, data = getData(eval_sets, "unknown"), byUser = FALSE)
 eval_accuracy
+
+results <- evaluate(x = eval_sets, method = model_to_evaluate, n = seq(10, 100, 10))
+class(results)
+
+head(getConfusionMatrix(results)[[1]])
+
+columns_to_sum <- c("TP", "FP", "FN", "TN")
+indices_summed <- Reduce("+", getConfusionMatrix(results))[, columns_to_sum]
+head(indices_summed)
+
+plot(results, annotate = TRUE, main = "ROC curve")
+
+plot(results, "prec/rec", annotate = TRUE, main = "Precision-recall")
