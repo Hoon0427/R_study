@@ -100,6 +100,7 @@ eval_accuracy
 
 results <- evaluate(x = eval_sets, method = model_to_evaluate, n = seq(10, 100, 10))
 class(results)
+str(results)
 
 head(getConfusionMatrix(results)[[1]])
 
