@@ -111,3 +111,5 @@ head(indices_summed)
 plot(results, annotate = TRUE, main = "ROC curve")
 
 plot(results, "prec/rec", annotate = TRUE, main = "Precision-recall")
+
+list(name = "IBCF", param = list(k = 20))
