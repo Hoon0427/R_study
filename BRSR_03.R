@@ -113,3 +113,22 @@ plot(results, annotate = TRUE, main = "ROC curve")
 plot(results, "prec/rec", annotate = TRUE, main = "Precision-recall")
 
 list(name = "IBCF", param = list(k = 20))
+
+models_to_evaluate <- list(IBCF_cos = list(name = "IBCF", param = list(method = "cosine")),
+                           IBCF_cor = list(name = "IBCF", param = list(method = "pearson")),
+                           UBCF_cos = list(name = "UBCF", param = list(method = "cosine")),
+                           UBCF_cor = list(name = "UBCF", param = list(method = "pearson")),
+                           random = list(name = "RANDOM", param = NULL))
+
+n_recommendations <- c(1, 5, seq(10, 100, 10))
+
+list_results <- evaluate(x = eval_sets, method = models_to_evaluate, n = n_recommendations)
+class(list_results)
+
+class(list_results[[1]])
+
+sapply(list_results, class) == "evaluationResults"
+
+avg_matrices <- lapply(list_results, avg)
+
+head(avg_matrices$IBCF_cos[, 5:8])
