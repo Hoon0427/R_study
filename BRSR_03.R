@@ -132,3 +132,9 @@ sapply(list_results, class) == "evaluationResults"
 avg_matrices <- lapply(list_results, avg)
 
 head(avg_matrices$IBCF_cos[, 5:8])
+
+plot(list_results, annotate = 1, legend = "topleft")
+title("ROC curve")
+
+plot(list_results, "prec/rec", annotate = 1, legend = "bottomright")
+title("Precision-recall")
