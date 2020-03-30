@@ -138,3 +138,19 @@ title("ROC curve")
 
 plot(list_results, "prec/rec", annotate = 1, legend = "bottomright")
 title("Precision-recall")
+
+vector_k <- c(5, 10, 20, 30, 40)
+
+models_to_evaluate <- lapply(vector_k, function(k){
+  list(name = "IBCF", param = list(method = "cosine", k = k))
+})
+names(models_to_evaluate) <- paste0("IBCF_k_", vector_k)
+
+n_recommendations <- c(1, 5, seq(10, 100, 10))
+list_results <- evaluate(x = eval_sets, method = models_to_evaluate, n = n_recommendations)
+
+plot(list_results, annotate = 1, legend = "topleft")
+title("ROC curve")
+
+plot(list_results, "prec/rec", annotate = 1, legend = "bottomright")
+title("Precision-recall")
