@@ -156,3 +156,10 @@ recc_matrix <- sapply(recc_predicted@items, function(x){
 dim(recc_matrix)
 
 head(recc_matrix[, 1:3])
+
+table_recomm_per_item <- table(recc_matrix)
+recomm_per_item <- as(table_recomm_per_item, "numeric")
+
+bin_recomm_per_item <- cut(recomm_per_item, breaks = c(0, 10, 20, 100, max(recomm_per_item)))
+
+qplot(bin_recomm_per_item) + ggtitle("Recommendations per item")
