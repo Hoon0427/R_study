@@ -170,3 +170,104 @@ table_top <- data.frame(name = names(recomm_per_item_top),
                         n_recomm = recomm_per_item_top)
 table_top[, c(1,3)]
 
+evaluateModel <- function(
+  # 입력데이터
+  ratings_matrix, # 평점 매트릭스(rating matrix)
+  table_items, # 아이템 설명 정보 테이블
+  #K-fold 매개변수
+  n_fold = 10, # 겹의 개수
+  items_to_keep = 4, # TEST 데이터 세트에 포함할 아이템 개수
+  # 모델 매개변수
+  number_neighbors = 30, # 최근접 이웃의 수
+  weight_description = 0.2, # 아이템 설명 정보 기반 거리에 대한 가중치
+  items_to_recommend = 10 # 추천 아이템의 개수
+){
+  # 평가 (evalueate) 모델 파트
+  set.seed(1)
+  eval_sets <- evaluationScheme(data = ratings_matrix,
+                                method = "cross-validation",
+                                k = n_fold,
+                                given = items_to_keep)
+  
+  recc_model <- Recommender(data = getData(eval_sets, "train"),
+                            method = "IBCF",
+                            parameter = list(method = "Jaccard",
+                                             k = number_neighbors))
+  dist_ratings <- as(recc_model@model$sim, "matrix")
+  vector_items <- rownames(dist_ratings)
+  
+  dist_category <- table_items[, 1 - as.matrix(dist(category == "product"))]
+  rownames(dist_category) <- table_items[, id]
+  colnames(dist_category) <- table_items[, id]
+  dist_category <- dist_category[vector_items, vector_items]
+  
+  dist_tot <- dist_category * weight_description + dist_ratings * (1 - weight_description) 
+  recc_model@model$sim <- as(dist_tot, "dgCMatrix")
+  
+  eval_prediction <- predict(object = recc_model,
+                             newdata = getData(eval_sets, "known"),
+                             n = items_to_recommend,
+                             type = "topNList")
+  
+  eval_accuracy <- calcPredictionAccuracy(x = eval_prediction,
+                                          data = getData(eval_sets, "unknown"),
+                                          byUser = FALSE,
+                                          given = items_to_recommend)
+  
+  return(eval_accuracy)
+}
+
+model_evaluation <- evaluateModel(ratings_matrix = ratings_matrix,
+                                  table_items = table_items)
+model_evaluation
+
+nn_to_test <- seq(4, 80, by = 2)
+
+list_performance <- lapply(X = nn_to_test, FUN = function(nn){
+  evaluateModel(ratings_matrix = ratings_matrix,
+                table_items = table_items,
+                number_neighbors = nn,
+                weight_description = 0)
+})
+
+list_performance[[1]]
+
+sapply(list_performance, "[[", "precision")
+
+table_performance <- data.table(
+  nn = nn_to_test,
+  precision = sapply(list_performance, "[[", "precision"),
+  recall = sapply(list_performance, "[[", "recall")
+  )
+
+weight_precision <- 0.5
+table_performance[, perfomance := precision * weight_precision + recall * (1 - weight_precision)]
+
+head(table_performance)
+
+convertIntoPercent <- function(x){
+  paste0(round(x*100), "%")
+}
+
+qplot(table_performance[, nn],
+      table_performance[, precision]) + geom_smooth() + scale_y_continuous(labels = convertIntoPercent)
+
+qplot(table_performance[, nn],
+      table_performance[, recall]) + geom_smooth() + scale_y_continuous(labels = convertIntoPercent)
+
+qplot(table_performance[, nn],
+      table_performance[, perfomance]) + geom_smooth() + scale_y_continuous(labels = convertIntoPercent)
+
+row_best <- which.max(table_performance$perfomance)
+number_neighbors_opt <- table_performance[row_best, nn]
+number_neighbors_opt
+
+wd_to_try <- seq(0, 1, by = 0.05)
+
+list_performance <- lapply(
+  X = wd_to_try, FUN = function(wd){
+    evaluateModel(ratings_matrix = ratings_matrix,
+                  table_items = table_items,
+                  number_neighbors = number_neighbors_opt,
+                  weight_description = wd)
+})
