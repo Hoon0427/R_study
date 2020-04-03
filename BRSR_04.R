@@ -271,3 +271,14 @@ list_performance <- lapply(
                   number_neighbors = number_neighbors_opt,
                   weight_description = wd)
 })
+
+table_performance <- data.table(
+  wd = wd_to_try, precision = sapply(list_performance, "[[", "precision"),
+  recall = sapply(list_performance, "[[", "recall")
+)
+
+table_performance[, performance := precision * weight_precision + 
+                    recall * (1 - weight_precision)]
+
+qplot(table_performance[, wd], table_performance[, performance]) +
+  geom_smooth() + scale_y_continuous(labels = convertIntoPercent)
