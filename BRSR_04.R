@@ -163,3 +163,10 @@ recomm_per_item <- as(table_recomm_per_item, "numeric")
 bin_recomm_per_item <- cut(recomm_per_item, breaks = c(0, 10, 20, 100, max(recomm_per_item)))
 
 qplot(bin_recomm_per_item) + ggtitle("Recommendations per item")
+
+recomm_per_item_sorted <- sort(table_recomm_per_item, decreasing = TRUE)
+recomm_per_item_top <- head(recomm_per_item_sorted, n = 4)
+table_top <- data.frame(name = names(recomm_per_item_top),
+                        n_recomm = recomm_per_item_top)
+table_top[, c(1,3)]
+
