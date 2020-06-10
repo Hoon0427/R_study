@@ -2,11 +2,11 @@ library(readxl)
 library(dplyr)
 
 test <- read_excel('C:/Users/LENOVO/Desktop/엔사이크 사업관련/6. 모아젠/df_clean_deci_phase_d-bmi+index_color.xlsx')
-
+colnames(test)
 head(test)
 
 test_01 <- na.omit(test)
-
+test_01
 head(test_01)
 
 summary(test_01)
@@ -20,9 +20,9 @@ summary(model_02)
 model_03 <- lm(dm~age+glu+AS1_CREATININE+AS1_FLI, data=test_01)
 summary(model_03)
 
+
 model_04 <- step(model_01,direction = "backward")
-model_05 <- step(model_04,direction = "backward")
-summary(model_05)
+summary(model_04)
 
 # install.packages("car")
 library(car)
@@ -56,7 +56,7 @@ relweights <- function(fit,...){
 }
 
 result = relweights(model_03, col="blue")
-
+result = relweights(model_04, col="blue")
 
 # install.packages("ggplot2")
 library(ggplot2)
@@ -76,4 +76,4 @@ plotRelWeights = function(fit){
 
 plotRelWeights(model_03)
 
-plotRelWeights(model_01)
+plotRelWeights(model_04)
